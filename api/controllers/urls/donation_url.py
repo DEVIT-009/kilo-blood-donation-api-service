@@ -1,0 +1,15 @@
+from django.urls import path
+
+from api.controllers.views.donation_view import DonationView
+
+urlpatterns = [
+    path('donation/self-donation', DonationView.as_view({
+        'get': 'list_self_offered'
+    }), name='donation-list-offered'),
+    path('donation/<int:pk>/offered', DonationView.as_view({
+        'post': 'offered_request'
+    }), name='donation-post-offered'),
+    path('donation/<int:pk>/cancelled', DonationView.as_view({
+        'patch': 'cancelled_by_donor'
+    }), name='donation-patch-cancelled-by-donor'),
+]
