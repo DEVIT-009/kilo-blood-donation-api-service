@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.utils import timezone
 
 from api.controllers.dto.serializers.donation_serializer import DonationSerializer
 from api.exceptions.blood_request_exception import BloodRequestException
@@ -48,11 +49,6 @@ class DonationService:
         if not donation:
             raise DonationException.bad_request(message='CANNOT_CANCELLED_BLOOD_ALREADY_ACCEPTED')
 
-        donation = cls.detail(pk=pk, user_id=user_id)
-        request_blood = BloodRequestRepository.get_one(pk=donation.request_id)
-        request_blood.status = 'pending'
-        request_blood.save(update_fields=['status'])
-
         serialize = DonationSerializer(
             instance=donation,
             data={'status': 'cancelled'},
@@ -62,3 +58,43 @@ class DonationService:
             donation_instance = serialize.save()
             return donation_instance, None
         return None, serialize.errors
+
+    @staticmethod
+    @transaction.atomic()
+    def accepted_donation(user_id, pk):
+        donation = DonationRepository.get_offered_for_accepted(user_id=user_id, donation_id=pk)
+        if not donation:
+            raise DonationException.not_found()
+        donation.status = 'accepted'
+        donation.save(update_fields=['status'])
+        return donation
+
+    @staticmethod
+    @transaction.atomic()
+    def completed_donation(user_id, pk):
+        donation = DonationRepository.get_accepted(user_id=user_id, donation_id=pk)
+        if not donation:
+            raise DonationException.not_found()
+        donation.status = 'completed'
+        donation.completed_at = timezone.now()
+
+        blood_request = BloodRequestRepository.get_request_by_id(user_id=user_id, request_id=donation.request_id)
+        if not blood_request:
+            raise BloodRequestException.not_found()
+        blood_request.status = 'ended'
+        blood_request.ended_at = timezone.now()
+
+        donation.save(update_fields=['status', 'completed_at'])
+        blood_request.save(update_fields=['status', 'ended_at'])
+        return donation
+
+    @staticmethod
+    @transaction.atomic()
+    def declined_donation(user_id, pk):
+        donation = DonationRepository.get_accepted(user_id=user_id, donation_id=pk)
+        if not donation:
+            raise DonationException.not_found()
+        donation.status = 'declined'
+
+        donation.save(update_fields=['status'])
+        return donation

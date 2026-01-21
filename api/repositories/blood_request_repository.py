@@ -41,8 +41,15 @@ class BloodRequestRepository:
     @staticmethod
     def get_blood_pending(user_id, pk, status='pending'):
         return (
-            BloodRequest.objects
-            .filter(pk=pk, deleted_at__isnull=True, status=status)
+            BloodRequest.objects.filter(pk=pk, deleted_at__isnull=True, status=status)
             .exclude(created_by=user_id)
+            .first()
+        )
+
+    @staticmethod
+    def get_request_by_id(user_id, request_id):
+        return (
+            BloodRequest.objects
+            .filter(ended_at__isnull=True, pk=request_id, created_by=user_id)
             .first()
         )

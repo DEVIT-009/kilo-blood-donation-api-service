@@ -19,17 +19,12 @@ class DonationView(ViewSet):
 
     @metadata_handler(required_user_id=True)
     def offered_request(self, request: Request, metadata: Metadata, pk, *args, **kwargs):
-        print(pk)
-        print(pk)
-        print(pk)
-        print(pk)
-        print(pk)
         data, error = DonationService.offered(metadata=metadata, pk=pk)
         if error:
             return ResponseHandler.bad_request(data={"error": error})
 
         donation = DonationResponse.detail(data)
-        return ResponseHandler.created(
+        return ResponseHandler.updated(
             data=donation,
             message="OFFERED SUCCESSFULLY"
         )
@@ -44,4 +39,31 @@ class DonationView(ViewSet):
         return ResponseHandler.created(
             data=donation,
             message="CANCELLED SUCCESSFULLY"
+        )
+
+    @metadata_handler(required_user_id=True)
+    def accepted_donation(self, request: Request, metadata: Metadata, pk=None, *args, **kwargs):
+        data = DonationService.accepted_donation(user_id=metadata.user_id, pk=pk)
+        donation = DonationResponse.detail(data)
+        return ResponseHandler.updated(
+            data=donation,
+            message="ACCEPTED DONATION SUCCESSFULLY"
+        )
+
+    @metadata_handler(required_user_id=True)
+    def completed_donation(self, request: Request, metadata: Metadata, pk=None, *args, **kwargs):
+        data = DonationService.completed_donation(user_id=metadata.user_id, pk=pk)
+        donation = DonationResponse.detail(data)
+        return ResponseHandler.updated(
+            data=donation,
+            message="COMPLETED DONATION SUCCESSFULLY"
+        )
+
+    @metadata_handler(required_user_id=True)
+    def declined_donation(self, request: Request, metadata: Metadata, pk=None, *args, **kwargs):
+        data = DonationService.declined_donation(user_id=metadata.user_id, pk=pk)
+        donation = DonationResponse.detail(data)
+        return ResponseHandler.updated(
+            data=donation,
+            message="COMPLETED DONATION SUCCESSFULLY"
         )

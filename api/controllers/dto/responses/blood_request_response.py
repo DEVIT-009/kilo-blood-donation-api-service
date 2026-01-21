@@ -9,6 +9,7 @@ class BloodRequestResponse:
             'blood_type': instance.blood_type,
             'location': instance.location,
             'quantity': instance.quantity,
+            'created_by': instance.created_by,
         }
 
     @staticmethod

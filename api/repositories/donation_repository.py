@@ -32,3 +32,29 @@ class DonationRepository():
             .filter(completed_at__isnull=True, donor_id=user_id, status='offered', pk=pk)
             .first()
         )
+
+    @staticmethod
+    def get_offered_for_accepted(user_id, donation_id: int):
+        return (
+            Donation.objects
+            .filter(
+                id=donation_id,
+                completed_at__isnull=True,
+                request__created_by=user_id,
+                status='offered',
+            )
+            .first()
+        )
+
+    @staticmethod
+    def get_accepted(user_id, donation_id: int):
+        return (
+            Donation.objects
+            .filter(
+                id=donation_id,
+                completed_at__isnull=True,
+                request__created_by=user_id,
+                status='accepted',
+            )
+            .first()
+        )
