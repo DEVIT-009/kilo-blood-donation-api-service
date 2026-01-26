@@ -10,7 +10,7 @@ class DonationRepository():
         )
 
     @staticmethod
-    def get_all_self_offered(user_id):
+    def list_self_offered(user_id):
         # all donation from others
         return (
             Donation.objects
@@ -57,4 +57,26 @@ class DonationRepository():
                 status='accepted',
             )
             .first()
+        )
+
+    @staticmethod
+    def list_self_accepted(user_id):
+        return (
+            Donation.objects
+            .filter(
+                completed_at__isnull=True,
+                request__created_by=user_id,
+                status='accepted',
+            )
+        )
+
+    @staticmethod
+    def list_got_accepted(user_id):
+        return (
+            Donation.objects
+            .filter(
+                completed_at__isnull=True,
+                status='accepted',
+                donor_id=user_id,
+            )
         )

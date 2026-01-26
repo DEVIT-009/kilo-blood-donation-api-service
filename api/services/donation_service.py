@@ -18,8 +18,16 @@ class DonationService:
         return donation
 
     @staticmethod
-    def list_self_offered(metadata: Metadata):
-        return DonationRepository.get_all_self_offered(metadata.user_id)
+    def list_self_offered(user_id):
+        return DonationRepository.list_self_offered(user_id=user_id)
+
+    @staticmethod
+    def list_self_accepted(user_id):
+        return DonationRepository.list_self_accepted(user_id=user_id)
+
+    @staticmethod
+    def list_got_accepted(user_id):
+        return DonationRepository.list_got_accepted(user_id=user_id)
 
     @staticmethod
     @transaction.atomic()

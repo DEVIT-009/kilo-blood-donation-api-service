@@ -10,10 +10,28 @@ class DonationView(ViewSet):
 
     @metadata_handler(required_user_id=True)
     def list_self_offered(self, request: Request, metadata: Metadata, *args, **kwargs):
-        data = DonationService.list_self_offered(metadata=metadata)
-        blood_request = DonationResponse.list(data)
+        data = DonationService.list_self_offered(user_id=metadata.user_id)
+        donation = DonationResponse.list(data)
         return ResponseHandler.success(
-            data=blood_request,
+            data=donation,
+            message="RETRIEVE SUCCESSFULLY"
+        )
+
+    @metadata_handler(required_user_id=True)
+    def list_self_accepted(self, request: Request, metadata: Metadata, *args, **kwargs):
+        data = DonationService.list_self_accepted(user_id=metadata.user_id)
+        donation = DonationResponse.list(data)
+        return ResponseHandler.success(
+            data=donation,
+            message="RETRIEVE SUCCESSFULLY"
+        )
+
+    @metadata_handler(required_user_id=True)
+    def list_got_accepted(self, request: Request, metadata: Metadata, *args, **kwargs):
+        data = DonationService.list_got_accepted(user_id=metadata.user_id)
+        donation = DonationResponse.list(data)
+        return ResponseHandler.success(
+            data=donation,
             message="RETRIEVE SUCCESSFULLY"
         )
 

@@ -3,9 +3,15 @@ from django.urls import path
 from api.controllers.views.donation_view import DonationView
 
 urlpatterns = [
-    path('donation/self-donation', DonationView.as_view({
+    path('donation/self-offered', DonationView.as_view({
         'get': 'list_self_offered'
     }), name='donation-list-offered'),
+    path('donation/self-accepted', DonationView.as_view({
+        'get': 'list_self_accepted'
+    }), name='donation-list-self-accepted'),
+    path('donation/got-accepted', DonationView.as_view({
+        'get': 'list_got_accepted'
+    }), name='donation-list-got-accepted'),
     path('donation/<int:pk>/offered', DonationView.as_view({
         'post': 'offered_request'
     }), name='donation-post-offered'),
